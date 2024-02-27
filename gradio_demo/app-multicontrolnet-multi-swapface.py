@@ -288,6 +288,7 @@ def main(pretrained_model_name_or_path="wangqixun/YamerMIX_v8", enable_lcm_arg=F
         enable_LCM,
         enhance_face_region,
         mask_area,
+        denoise_strength,
         progress=gr.Progress(track_tqdm=True),
     ):
 
@@ -400,6 +401,7 @@ def main(pretrained_model_name_or_path="wangqixun/YamerMIX_v8", enable_lcm_arg=F
                     height=height,
                     width=width,
                     generator=generator,
+                    strength=denoise_strength,
                 ).images[0]
                 img_results.append(images)
         else:
@@ -428,9 +430,10 @@ def main(pretrained_model_name_or_path="wangqixun/YamerMIX_v8", enable_lcm_arg=F
     ### Usage tips of InstantID
     1. If you're not satisfied with the similarity, try increasing the weight of "IdentityNet Strength" and "Adapter Strength."    
     2. If you feel that the saturation is too high, first decrease the Adapter strength. If it remains too high, then decrease the IdentityNet strength.
-    3. for onle swap face, prompt is not necessary.
-    4. adjust the strength of sample steps and Guidance scale to control the generation process, keep the Guidance scale low.
-    4. If you find that realistic style is not good enough, go for our Github repo and use a more realistic base model.
+    3. you can also adjust the denoising strength.
+    4. for onle swap face, prompt is not necessary.
+    5. adjust the strength of sample steps and Guidance scale to control the generation process, keep the Guidance scale low.
+    6. If you find that realistic style is not good enough, go for our Github repo and use a more realistic base model.
     """
 
     css = """
@@ -526,6 +529,13 @@ def main(pretrained_model_name_or_path="wangqixun/YamerMIX_v8", enable_lcm_arg=F
                         step=0.05,
                         value=0.80,
                     )
+                    denoise_strength = gr.Slider(
+                        label="denoising strength",
+                        minimum=0,
+                        maximum=1.0,
+                        step=0.01,
+                        value=0.8,
+                    )
                 with gr.Accordion(open=True, label="Advanced Options"):
                     negative_prompt = gr.Textbox(
                         label="Negative Prompt",
@@ -609,6 +619,7 @@ def main(pretrained_model_name_or_path="wangqixun/YamerMIX_v8", enable_lcm_arg=F
                     enable_LCM,
                     enhance_face_region,
                     mask_area,
+                    denoise_strength,
                 ],
                 outputs=[gallery, usage_tips],
             )
